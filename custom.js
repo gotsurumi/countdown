@@ -1,5 +1,4 @@
 const React = window.unlayer.React;
-const ReactDOM = window.unlayer.ReactDOM;
 
 const CountdownViewer = ({ values }) => {
   const { countdownTime, buttonText, buttonLink } = values;
