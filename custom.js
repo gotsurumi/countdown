@@ -1,4 +1,5 @@
 const React = window.unlayer.React;
+const ReactDOM = window.unlayer.ReactDOM;
 
 const CountdownViewer = ({ values }) => {
   const { countdownTime, buttonText, buttonLink } = values;
@@ -25,13 +26,12 @@ const CountdownViewer = ({ values }) => {
     return `${h}時間 ${m}分 ${s}秒`;
   };
 
-  return (
-    <div>
-      <div>残り時間: {formatTime(timeLeft)}</div>
-      <button disabled={isButtonDisabled} onClick={() => window.location.href = buttonLink}>
-        {buttonText}
-      </button>
-    </div>
+  return React.createElement('div', null, 
+    React.createElement('div', null, `残り時間: ${formatTime(timeLeft)}`),
+    React.createElement('button', {
+      disabled: isButtonDisabled,
+      onClick: () => window.location.href = buttonLink
+    }, buttonText)
   );
 };
 
@@ -84,7 +84,7 @@ unlayer.registerTool({
   renderer: {
     Viewer: unlayer.createViewer({
       render(values) {
-        return <CountdownViewer values={values} />;
+        return React.createElement(CountdownViewer, { values });
       },
     }),
     exporters: {
