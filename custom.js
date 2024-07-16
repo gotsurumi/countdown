@@ -1,5 +1,4 @@
-const React = window.unlayer.React;
-
+<script type="text/babel">
 const CountdownViewer = ({ values }) => {
   const { countdownTime, buttonText, buttonLink } = values;
   const [timeLeft, setTimeLeft] = React.useState(countdownTime);
@@ -109,3 +108,4 @@ unlayer.registerTool({
 });
 
 console.log('Custom tool registered successfully.');
+</script>
