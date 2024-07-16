@@ -36,13 +36,12 @@ class CountdownViewer extends React.Component {
 
   render() {
     const { buttonText, buttonLink } = this.props.values;
-    return (
-      <div>
-        <div>残り時間: {this.formatTime(this.state.timeLeft)}</div>
-        <button disabled={this.state.isButtonDisabled} onClick={() => window.location.href = buttonLink}>
-          {buttonText}
-        </button>
-      </div>
+    return React.createElement('div', null, 
+      React.createElement('div', null, `残り時間: ${this.formatTime(this.state.timeLeft)}`),
+      React.createElement('button', {
+        disabled: this.state.isButtonDisabled,
+        onClick: () => window.location.href = buttonLink
+      }, buttonText)
     );
   }
 }
@@ -75,7 +74,7 @@ unlayer.registerTool({
   renderer: {
     Viewer: (props) => {
       const container = document.createElement('div');
-      ReactDOM.render(<CountdownViewer {...props} />, container);
+      ReactDOM.render(React.createElement(CountdownViewer, props), container);
       return container;
     },
     exporters: {
