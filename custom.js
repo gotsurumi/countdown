@@ -1,41 +1,51 @@
 const React = window.unlayer.React;
 const ReactDOM = window.unlayer.ReactDOM;
 
-const CountdownViewer = ({ values }) => {
-  const { countdownTime, buttonText, buttonLink } = values;
-  const [timeLeft, setTimeLeft] = React.useState(countdownTime);
-  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
+class CountdownViewer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      timeLeft: props.values.countdownTime,
+      isButtonDisabled: false
+    };
+  }
 
-  React.useEffect(() => {
-    if (timeLeft <= 0) {
-      setIsButtonDisabled(true);
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setTimeLeft(prevTime => prevTime - 1);
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.setState(prevState => ({
+        timeLeft: prevState.timeLeft - 1
+      }), () => {
+        if (this.state.timeLeft <= 0) {
+          clearInterval(this.timer);
+          this.setState({ isButtonDisabled: true });
+        }
+      });
     }, 1000);
+  }
 
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
 
-  const formatTime = (seconds) => {
+  formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = Math.floor(seconds % 60);
     return `${h}時間 ${m}分 ${s}秒`;
-  };
+  }
 
-  return React.createElement('div', null, 
-    React.createElement('div', null, `残り時間: ${formatTime(timeLeft)}`),
-    React.createElement('button', {
-      disabled: isButtonDisabled,
-      onClick: () => window.location.href = buttonLink
-    }, buttonText)
-  );
-};
-
-console.log('Registering custom tool...');
+  render() {
+    const { buttonText, buttonLink } = this.props.values;
+    return (
+      <div>
+        <div>残り時間: {this.formatTime(this.state.timeLeft)}</div>
+        <button disabled={this.state.isButtonDisabled} onClick={() => window.location.href = buttonLink}>
+          {buttonText}
+        </button>
+      </div>
+    );
+  }
+}
 
 unlayer.registerTool({
   name: 'countdown_tool',
@@ -43,69 +53,44 @@ unlayer.registerTool({
   icon: 'fa-clock',
   supportedDisplayModes: ['web', 'email'],
   options: {
-    default: {
-      title: null,
-    },
     countdownTime: {
       title: 'カウントダウン時間（秒）',
       position: 1,
-      options: {
-        countdownTime: {
-          label: 'カウントダウン時間（秒）',
-          defaultValue: 3600,
-          widget: 'number',
-        },
-      },
+      defaultValue: 3600,
+      widget: 'number'
     },
     buttonText: {
       title: 'ボタンテキスト',
       position: 2,
-      options: {
-        buttonText: {
-          label: 'ボタンテキスト',
-          defaultValue: 'クリック',
-          widget: 'text',
-        },
-      },
+      defaultValue: 'クリック',
+      widget: 'text'
     },
     buttonLink: {
       title: 'ボタンリンク',
       position: 3,
-      options: {
-        buttonLink: {
-          label: 'ボタンリンク',
-          defaultValue: 'https://example.com',
-          widget: 'text',
-        },
-      },
-    },
+      defaultValue: 'https://example.com',
+      widget: 'text'
+    }
   },
-  values: {},
   renderer: {
-    Viewer: unlayer.createViewer({
-      render(values) {
-        return React.createElement(CountdownViewer, { values });
-      },
-    }),
+    Viewer: (props) => {
+      const container = document.createElement('div');
+      ReactDOM.render(<CountdownViewer {...props} />, container);
+      return container;
+    },
     exporters: {
-      web: function (values) {
+      web: (props) => {
         return `<div>
-          <div>残り時間: ${values.countdownTime}秒</div>
-          <button>${values.buttonText}</button>
+          <div>残り時間: ${props.values.countdownTime}秒</div>
+          <button>${props.values.buttonText}</button>
         </div>`;
       },
-      email: function (values) {
+      email: (props) => {
         return `<div>
-          <div>残り時間: ${values.countdownTime}秒</div>
-          <button>${values.buttonText}</button>
+          <div>残り時間: ${props.values.countdownTime}秒</div>
+          <button>${props.values.buttonText}</button>
         </div>`;
-      },
-    },
-    head: {
-      css: function (values) {},
-      js: function (values) {},
-    },
-  },
+      }
+    }
+  }
 });
-
-console.log('Custom tool registered successfully.');
