@@ -35,6 +35,8 @@ const CountdownViewer = ({ values }) => {
   );
 };
 
+console.log('Registering custom tool...');
+
 unlayer.registerTool({
   name: 'countdown_tool',
   label: 'カウントダウン',
@@ -105,3 +107,5 @@ unlayer.registerTool({
     },
   },
 });
+
+console.log('Custom tool registered successfully.');
