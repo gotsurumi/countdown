@@ -22,7 +22,7 @@
     name: 'countdown_tool',
     label: 'Countdown',
     icon: 'fa-clock',
-    supportedDisplayModes: ['web'],
+    supportedDisplayModes: ['web', 'email'],
     options: {
       default: {
         time: { label: 'Countdown Time (seconds)', defaultValue: 3600, widget: 'number' },
